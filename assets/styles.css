@@ -95,6 +95,10 @@ h1 {
   font-weight: 500;
 }
 
+h1 span {
+  display: block;
+}
+
 .teaser-section {
   padding: 0.5rem 0 3rem;
 }
