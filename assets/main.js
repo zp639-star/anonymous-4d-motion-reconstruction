@@ -66,6 +66,9 @@ async function initAssetViewer(
   const timeInput = card.querySelector("[data-model-time]");
   const timeLabel = card.querySelector("[data-model-time-label]");
   const modelSrc = host?.dataset.modelSrc;
+  const animationEnd = host?.dataset.animationEnd
+    ? Number(host.dataset.animationEnd)
+    : 1;
 
   if (!host || !modelSrc) return;
 
@@ -121,6 +124,10 @@ async function initAssetViewer(
       : null;
     const clip = gltf.animations[0];
     const duration = clip ? clip.duration : 0;
+    const playableDuration =
+      duration && Number.isFinite(animationEnd)
+        ? duration * three.MathUtils.clamp(animationEnd, 0.01, 1)
+        : duration;
     let isPlaying = Boolean(mixer && clip);
 
     if (mixer && clip) {
@@ -128,12 +135,15 @@ async function initAssetViewer(
     }
 
     function updateTimeUi(seconds) {
-      if (!duration) return;
+      if (!playableDuration) return;
 
-      const wrapped = ((seconds % duration) + duration) % duration;
+      const wrapped =
+        ((seconds % playableDuration) + playableDuration) % playableDuration;
 
       if (timeInput && document.activeElement !== timeInput) {
-        timeInput.value = String(Math.round((wrapped / duration) * 1000));
+        timeInput.value = String(
+          Math.round((wrapped / playableDuration) * 1000)
+        );
       }
 
       if (timeLabel) {
@@ -154,9 +164,9 @@ async function initAssetViewer(
     if (timeInput) {
       timeInput.disabled = !mixer;
       timeInput.addEventListener("input", () => {
-        if (!mixer || !duration) return;
+        if (!mixer || !playableDuration) return;
 
-        const seconds = (Number(timeInput.value) / 1000) * duration;
+        const seconds = (Number(timeInput.value) / 1000) * playableDuration;
         mixer.setTime(seconds);
         isPlaying = false;
         if (playButton) playButton.textContent = "Play";
@@ -200,9 +210,13 @@ async function initAssetViewer(
 
       resize();
 
-      if (mixer && isPlaying) {
-        mixer.update(delta);
-        updateTimeUi(mixer.time);
+      if (mixer && isPlaying && playableDuration) {
+        const nextTime = mixer.time + delta;
+        const wrapped =
+          ((nextTime % playableDuration) + playableDuration) %
+          playableDuration;
+        mixer.setTime(wrapped);
+        updateTimeUi(wrapped);
       }
 
       controls.update();
