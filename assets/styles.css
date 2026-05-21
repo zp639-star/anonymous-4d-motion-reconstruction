@@ -165,6 +165,15 @@ h3 {
   height: auto;
 }
 
+.pipeline-figure figcaption {
+  border-top: 1px solid var(--line);
+  color: #333333;
+  font-size: 0.96rem;
+  line-height: 1.65;
+  padding: 1rem 1.2rem 1.15rem;
+  text-align: justify;
+}
+
 .result-grid {
   display: flex;
   gap: 1.1rem;

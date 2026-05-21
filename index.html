@@ -103,6 +103,19 @@
           <h2>Pipeline</h2>
           <figure class="pipeline-figure">
             <img src="assets/media/pipeline/pipeline2.png" alt="Pipeline diagram" />
+            <figcaption>
+              Given an input video, we first sample frames and extract native
+              sparse coordinate structures for each frame. A representative
+              sparse structure is selected to initialize the canonical
+              structure, which is then iteratively refined through camera-free
+              sparse registration, matched coordinate update, repeated
+              coordinate addition, and reliability pruning. The consolidated
+              canonical sparse structure is passed to SLAT decoder to generate a
+              canonical mesh in a single pass. Finally, the canonical mesh and
+              the input video are fed into a reference-based motion
+              reconstruction module to produce a topology-consistent animated
+              mesh sequence.
+            </figcaption>
           </figure>
         </div>
       </section>
