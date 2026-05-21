@@ -90,8 +90,8 @@ p {
 h1 {
   max-width: 920px;
   margin: 0 auto 1.1rem;
-  font-size: clamp(2.1rem, 5vw, 4.2rem);
-  line-height: 1.04;
+  font-size: clamp(1.9rem, 4.2vw, 3.35rem);
+  line-height: 1.1;
   font-weight: 500;
 }
 
@@ -439,6 +439,10 @@ pre {
 
   .hero {
     padding-top: 3.2rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 7vw, 2.45rem);
   }
 
   .nav {
