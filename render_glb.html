@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #ffffff;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three.module.js",
+          "three/addons/": "./assets/vendor/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from "three";
+      import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+      const params = new URLSearchParams(location.search);
+      const modelSrc = params.get("model");
+      const yaw = THREE.MathUtils.degToRad(Number(params.get("yaw") || 0));
+      const time = Number(params.get("time") || 0);
+      const rotX = THREE.MathUtils.degToRad(Number(params.get("rotX") || -90));
+      const exposure = Number(params.get("exposure") || 1.32);
+      const hemiIntensity = Number(params.get("hemi") || 2.8);
+      const keyIntensity = Number(params.get("key") || 3.4);
+      const fillIntensity = Number(params.get("fill") || 0.0);
+      const scaleFactor = Number(params.get("scale") || 1.55);
+      const cameraY = Number(params.get("cameraY") || 0.18);
+      const targetY = Number(params.get("targetY") || 0.05);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setPixelRatio(1);
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = exposure;
+      document.body.append(renderer.domElement);
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xb8b8b8, hemiIntensity));
+      const key = new THREE.DirectionalLight(0xffffff, keyIntensity);
+      key.position.set(3, 4, 5);
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0xffffff, fillIntensity);
+      fill.position.set(-4, 2, -3);
+      scene.add(fill);
+
+      const camera = new THREE.PerspectiveCamera(
+        32,
+        window.innerWidth / window.innerHeight,
+        0.01,
+        100
+      );
+
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath("./assets/vendor/libs/draco/");
+      const loader = new GLTFLoader();
+      loader.setDRACOLoader(dracoLoader);
+      const gltf = await loader.loadAsync(modelSrc);
+      const model = gltf.scene;
+      scene.add(model);
+
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxSide = Math.max(size.x, size.y, size.z) || 1;
+      const modelScale = scaleFactor / maxSide;
+
+      model.position.sub(center);
+      scene.remove(model);
+
+      const pivot = new THREE.Group();
+      pivot.scale.setScalar(modelScale);
+      pivot.rotation.x = rotX;
+      pivot.add(model);
+      scene.add(pivot);
+
+      if (gltf.animations.length) {
+        const mixer = new THREE.AnimationMixer(model);
+        const clip = gltf.animations[0];
+        mixer.clipAction(clip).play();
+        mixer.setTime(time % clip.duration);
+      }
+
+      const distance = 3.0;
+      camera.position.set(Math.sin(yaw) * distance, cameraY, Math.cos(yaw) * distance);
+      camera.lookAt(0, targetY, 0);
+      renderer.render(scene, camera);
+      window.__READY__ = true;
+    </script>
+  </body>
+</html>

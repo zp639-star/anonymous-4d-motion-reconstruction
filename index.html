@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <title>Anonymous 4D Motion Reconstruction</title>
+    <meta
+      name="description"
+      content="Anonymous project page for monocular 4D motion reconstruction results."
+    />
+    <link rel="stylesheet" href="assets/styles.css?v=size-aligned-comparison" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three.module.js",
+          "three/addons/": "./assets/vendor/"
+        }
+      }
+    </script>
+    <script type="module" src="assets/main.js?v=fish-interactive-v2"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a href="#abstract">Abstract</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#model">4D Asset</a>
+        <a href="#comparison">Comparison</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-inner">
+          <p class="venue">Anonymous Submission</p>
+          <h1>Learning Motion-Aware 4D Representations from Monocular Videos</h1>
+        </div>
+      </section>
+
+      <section class="teaser-section">
+        <div class="container">
+          <figure class="video-frame">
+            <video
+              src="assets/media/videos/teaser.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              controls
+            ></video>
+          </figure>
+          <p class="teaser-caption">
+            Given a short input sequence, our anonymous system reconstructs
+            temporally coherent 4D views and plays each result forward, pauses
+            briefly, then reverses for direct inspection.
+          </p>
+        </div>
+      </section>
+
+      <section id="abstract" class="section">
+        <div class="container narrow">
+          <h2>Abstract</h2>
+          <p>
+            Recent video-to-4D methods have made progress in reconstructing
+            dynamic objects from monocular videos, but producing a usable
+            animated mesh asset remains challenging. Frame-wise reconstruction
+            methods can capture temporal shape variations, yet they often suffer
+            from inconsistent topology and unstable correspondences.
+            Reference-based methods improve temporal consistency by deforming a
+            fixed mesh through time, but their results become highly dependent
+            on the reference mesh. If the reference is reconstructed from a
+            single frame, occlusion, missing geometry, or transient contacts in
+            that frame can be inherited by the full sequence and cause distorted
+            deformation in later frames. Multi-frame mesh consolidation can
+            reduce this single-frame bias, but directly aligning detailed meshes
+            from different frames often suppresses high-frequency geometry and
+            appearance due to conflicting local reconstructions. We introduce a
+            4D-structure-guided pipeline for topology-consistent animated mesh
+            reconstruction. Given an input video, we first predict a temporally
+            consistent 4D coarse structure with a native 4D Sparse Structure
+            model, and convert it into a canonical sparse structure that
+            captures geometry compatible with the full motion sequence. We then
+            regenerate a canonical SLAT from this structure to obtain a
+            high-quality reference mesh and material representation using the
+            native 3D prior. To preserve faithful appearance, we further bake
+            reliable video observations onto the reference mesh, refine the
+            lifted material latent through observation-preserved SDEdit, and
+            enhance the decoded PBR maps with view-consistent image-prior
+            guidance for sharper texture details. Finally, the reference mesh is
+            animated by predicting per-frame vertex trajectories while keeping
+            the mesh connectivity fixed. Our method produces cleaner reference
+            geometry, sharper canonical materials, and more stable
+            topology-consistent animation under large motion, changing
+            visibility, and different object parts.
+          </p>
+        </div>
+      </section>
+
+      <section id="method" class="section section-tinted">
+        <div class="container">
+          <h2>Pipeline</h2>
+          <figure class="pipeline-figure">
+            <img src="assets/media/pipeline/pipeline2.png" alt="Pipeline diagram" />
+          </figure>
+        </div>
+      </section>
+
+      <section id="results" class="section">
+        <div class="container">
+          <h2>Qualitative Results</h2>
+          <p class="section-lead">
+            Each result is shown as a short video with the input condition and
+            two synthesized views.
+          </p>
+          <div id="result-grid" class="result-grid">
+            <figure class="result-card">
+              <video src="assets/media/result_videos/robot.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Robot example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/camel.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Camel example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/kangaroo.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Kangaroo example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/panda.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Panda example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/wolf.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Wolf example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/bee.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Bee example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/cow.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Cow example</figcaption>
+            </figure>
+            <figure class="result-card">
+              <video src="assets/media/result_videos/boxing.mp4" autoplay muted loop playsinline controls preload="metadata"></video>
+              <figcaption>Boxing example</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="model" class="section">
+        <div class="container">
+          <h2>Interactive 4D Assets</h2>
+          <p class="section-lead">
+            Drag to orbit, scroll to zoom, and scrub the animated asset through
+            time.
+          </p>
+          <div class="model-carousel-controls" aria-label="Interactive asset carousel controls">
+            <button type="button" data-carousel-prev aria-label="Previous interactive asset">&lsaquo;</button>
+            <button type="button" data-carousel-next aria-label="Next interactive asset">&rsaquo;</button>
+          </div>
+          <div class="model-carousel" aria-label="Interactive 4D asset carousel">
+            <article class="model-card">
+              <h3>Bee</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/bee.glb"
+                aria-label="Interactive bee model"
+              ></div>
+              <div class="model-controls" aria-label="Bee playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Bee animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+            <article class="model-card">
+              <h3>Cat</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/cat.glb"
+                aria-label="Interactive cat model"
+              ></div>
+              <div class="model-controls" aria-label="Cat playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Cat animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+            <article class="model-card">
+              <h3>Dinosaur</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/dinasour.glb"
+                aria-label="Interactive dinosaur model"
+              ></div>
+              <div class="model-controls" aria-label="Dinosaur playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Dinosaur animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+            <article class="model-card">
+              <h3>Elephant</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/fish.glb"
+                aria-label="Interactive elephant model"
+              ></div>
+              <div class="model-controls" aria-label="Elephant playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Elephant animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+            <article class="model-card">
+              <h3>Astronaut</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/fish2.glb"
+                aria-label="Interactive astronaut model"
+              ></div>
+              <div class="model-controls" aria-label="Astronaut playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Astronaut animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+            <article class="model-card">
+              <h3>Fish</h3>
+              <div
+                class="model-viewer"
+                data-model-src="assets/media/models/fish-animated-v2.glb"
+                aria-label="Interactive fish model"
+              ></div>
+              <div class="model-controls" aria-label="Fish playback controls">
+                <button type="button" data-model-play>Pause</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value="0"
+                  aria-label="Fish animation time"
+                  data-model-time
+                />
+                <span data-model-time-label>0.00s</span>
+              </div>
+              <p class="model-status">Loading interactive asset...</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="comparison" class="section section-tinted">
+        <div class="container">
+          <h2>Qualitative Comparison</h2>
+          <div class="comparison-results" aria-label="Method comparison videos">
+            <figure class="comparison-card">
+              <video
+                src="assets/media/comparisons/spiderman_comparison.mp4?v=size-aligned-comparison"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="metadata"
+              ></video>
+              <figcaption>Dancing Spiderman</figcaption>
+            </figure>
+            <figure class="comparison-card">
+              <video
+                src="assets/media/comparisons/triceratops_comparison.mp4?v=size-aligned-comparison"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="metadata"
+              ></video>
+              <figcaption>Running Triceratops</figcaption>
+            </figure>
+            <figure class="comparison-card">
+              <video
+                src="assets/media/comparisons/walking_aurorus_comparison.mp4?v=size-aligned-comparison"
+                autoplay
+                muted
+                loop
+                playsinline
+                controls
+                preload="metadata"
+              ></video>
+              <figcaption>Walking Aurorus</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-tinted">
+        <div class="container narrow">
+          <h2>Notes</h2>
+          <p>
+            Author names, affiliations, acknowledgements, repository links, and
+            external identifiers are omitted for review.
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
